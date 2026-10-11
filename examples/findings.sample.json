@@ -1,0 +1,341 @@
+{
+  "meta": {
+    "title": "Telemetry Privacy Report",
+    "subtitle": "Personal data & secrets discovered in log pipelines \u2014 DPIA annex",
+    "organization": "Example Corp (demo data)",
+    "environment": "production",
+    "author": "Observability Guild \u2014 grafana-privacy-report",
+    "scope": "All production namespaces ingested by Loki (synthetic demo dataset)",
+    "version": "1.0",
+    "classification": "CONFIDENTIAL \u2014 contains masked personal data findings",
+    "source": "http://loki-gateway.monitoring:3100 (demo)",
+    "selectors": [
+      "{namespace=~\".+\"}"
+    ],
+    "group_by": [
+      "namespace",
+      "app"
+    ],
+    "window": "24h",
+    "sample_lines": 5000,
+    "window_start": "2026-10-06T14:00:00+00:00",
+    "window_end": "2026-10-07T14:00:00+00:00",
+    "detectors": [
+      "email",
+      "card",
+      "iban",
+      "jwt",
+      "bearer",
+      "aws_key",
+      "phone",
+      "ip"
+    ],
+    "tool_version": "0.1.0",
+    "generated_at": "2026-10-07T14:34:48+00:00"
+  },
+  "summary": {
+    "streams_scanned": 6,
+    "streams_affected": 5,
+    "lines_sampled": 30000,
+    "findings": 13,
+    "by_severity": {
+      "Critical": 3,
+      "High": 9,
+      "Medium": 1,
+      "Low": 0
+    },
+    "est_pii_lines_per_day": 11707516
+  },
+  "findings": [
+    {
+      "stream": "{namespace=\"payments\", app=\"checkout-api\"}",
+      "owner": "Payments team",
+      "detector": "card",
+      "label": "Payment card number",
+      "category": "Financial data (PCI DSS scope)",
+      "gdpr_note": "Brings the log store into PCI DSS scope; also personal data.",
+      "sampled_lines": 5000,
+      "lines_with_hit": 799,
+      "occurrences": 799,
+      "distinct_values": 4,
+      "hit_rate": 0.1598,
+      "est_lines_per_day": 295630,
+      "retention_days": 90,
+      "risk_score": 30.0,
+      "severity": "Critical",
+      "examples": [
+        "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u20224444",
+        "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u20220005",
+        "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u20221881"
+      ],
+      "id": "PII-001"
+    },
+    {
+      "stream": "{namespace=\"payments\", app=\"checkout-api\"}",
+      "owner": "Payments team",
+      "detector": "iban",
+      "label": "IBAN / bank account",
+      "category": "Financial data",
+      "gdpr_note": "Personal data; high misuse potential for fraud.",
+      "sampled_lines": 5000,
+      "lines_with_hit": 820,
+      "occurrences": 820,
+      "distinct_values": 1,
+      "hit_rate": 0.164,
+      "est_lines_per_day": 303400,
+      "retention_days": 90,
+      "risk_score": 24.0,
+      "severity": "Critical",
+      "examples": [
+        "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u20223000"
+      ],
+      "id": "PII-002"
+    },
+    {
+      "stream": "{namespace=\"identity\", app=\"auth-service\"}",
+      "owner": "Identity team",
+      "detector": "jwt",
+      "label": "JWT / session token",
+      "category": "Credential",
+      "gdpr_note": "Not personal data by itself, but grants access to accounts that hold it.",
+      "sampled_lines": 5000,
+      "lines_with_hit": 1015,
+      "occurrences": 1015,
+      "distinct_values": 1,
+      "hit_rate": 0.203,
+      "est_lines_per_day": 129921,
+      "retention_days": 30,
+      "risk_score": 22.5,
+      "severity": "Critical",
+      "examples": [
+        "eyJh\u2026[107 chars]"
+      ],
+      "id": "PII-003"
+    },
+    {
+      "stream": "{namespace=\"ingress\", app=\"nginx-ingress\"}",
+      "owner": "Platform team",
+      "detector": "email",
+      "label": "Email address",
+      "category": "Direct identifier",
+      "gdpr_note": "Personal data under GDPR Art. 4(1).",
+      "sampled_lines": 5000,
+      "lines_with_hit": 130,
+      "occurrences": 130,
+      "distinct_values": 129,
+      "hit_rate": 0.026,
+      "est_lines_per_day": 244400,
+      "retention_days": 31,
+      "risk_score": 18.0,
+      "severity": "High",
+      "examples": [
+        "m***@e***.com",
+        "s***@e***.com",
+        "o***@e***.com"
+      ],
+      "id": "PII-004"
+    },
+    {
+      "stream": "{namespace=\"payments\", app=\"checkout-api\"}",
+      "owner": "Payments team",
+      "detector": "email",
+      "label": "Email address",
+      "category": "Direct identifier",
+      "gdpr_note": "Personal data under GDPR Art. 4(1).",
+      "sampled_lines": 5000,
+      "lines_with_hit": 1642,
+      "occurrences": 1642,
+      "distinct_values": 1501,
+      "hit_rate": 0.3284,
+      "est_lines_per_day": 607540,
+      "retention_days": 90,
+      "risk_score": 18.0,
+      "severity": "High",
+      "examples": [
+        "o***@e***.com",
+        "a***@e***.com",
+        "n***@e***.com"
+      ],
+      "id": "PII-005"
+    },
+    {
+      "stream": "{namespace=\"support\", app=\"helpdesk-bot\"}",
+      "owner": "Customer Support",
+      "detector": "email",
+      "label": "Email address",
+      "category": "Direct identifier",
+      "gdpr_note": "Personal data under GDPR Art. 4(1).",
+      "sampled_lines": 5000,
+      "lines_with_hit": 2416,
+      "occurrences": 2416,
+      "distinct_values": 2149,
+      "hit_rate": 0.4832,
+      "est_lines_per_day": 20295,
+      "retention_days": 180,
+      "risk_score": 18.0,
+      "severity": "High",
+      "examples": [
+        "o***@e***.com",
+        "a***@e***.com",
+        "m***@e***.com"
+      ],
+      "id": "PII-006"
+    },
+    {
+      "stream": "{namespace=\"support\", app=\"helpdesk-bot\"}",
+      "owner": "Customer Support",
+      "detector": "phone",
+      "label": "Phone number (E.164)",
+      "category": "Direct identifier",
+      "gdpr_note": "Personal data under GDPR Art. 4(1).",
+      "sampled_lines": 5000,
+      "lines_with_hit": 2416,
+      "occurrences": 2416,
+      "distinct_values": 2416,
+      "hit_rate": 0.4832,
+      "est_lines_per_day": 20295,
+      "retention_days": 180,
+      "risk_score": 18.0,
+      "severity": "High",
+      "examples": [
+        "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u202283",
+        "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u202248",
+        "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u202286"
+      ],
+      "id": "PII-007"
+    },
+    {
+      "stream": "{namespace=\"data\", app=\"billing-export\"}",
+      "owner": "Data Engineering",
+      "detector": "aws_key",
+      "label": "AWS access key ID",
+      "category": "Credential",
+      "gdpr_note": "Cloud credential; treat as a security incident.",
+      "sampled_lines": 5000,
+      "lines_with_hit": 1256,
+      "occurrences": 1256,
+      "distinct_values": 1,
+      "hit_rate": 0.2512,
+      "est_lines_per_day": 3015,
+      "retention_days": 14,
+      "risk_score": 15.0,
+      "severity": "High",
+      "examples": [
+        "AKIA\u2026[20 chars]"
+      ],
+      "id": "PII-008"
+    },
+    {
+      "stream": "{namespace=\"identity\", app=\"auth-service\"}",
+      "owner": "Identity team",
+      "detector": "phone",
+      "label": "Phone number (E.164)",
+      "category": "Direct identifier",
+      "gdpr_note": "Personal data under GDPR Art. 4(1).",
+      "sampled_lines": 5000,
+      "lines_with_hit": 960,
+      "occurrences": 960,
+      "distinct_values": 960,
+      "hit_rate": 0.192,
+      "est_lines_per_day": 122880,
+      "retention_days": 30,
+      "risk_score": 13.5,
+      "severity": "High",
+      "examples": [
+        "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u202241",
+        "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u202221",
+        "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u202299"
+      ],
+      "id": "PII-009"
+    },
+    {
+      "stream": "{namespace=\"identity\", app=\"auth-service\"}",
+      "owner": "Identity team",
+      "detector": "email",
+      "label": "Email address",
+      "category": "Direct identifier",
+      "gdpr_note": "Personal data under GDPR Art. 4(1).",
+      "sampled_lines": 5000,
+      "lines_with_hit": 1000,
+      "occurrences": 1000,
+      "distinct_values": 934,
+      "hit_rate": 0.2,
+      "est_lines_per_day": 128000,
+      "retention_days": 30,
+      "risk_score": 13.5,
+      "severity": "High",
+      "examples": [
+        "d***@e***.com",
+        "l***@e***.com",
+        "s***@e***.com"
+      ],
+      "id": "PII-010"
+    },
+    {
+      "stream": "{namespace=\"ingress\", app=\"nginx-ingress\"}",
+      "owner": "Platform team",
+      "detector": "ip",
+      "label": "Public IP address",
+      "category": "Online identifier",
+      "gdpr_note": "Online identifier; CJEU Breyer (C-582/14) treats dynamic IPs as personal data.",
+      "sampled_lines": 5000,
+      "lines_with_hit": 5000,
+      "occurrences": 5000,
+      "distinct_values": 98,
+      "hit_rate": 1.0,
+      "est_lines_per_day": 9400000,
+      "retention_days": 31,
+      "risk_score": 12.0,
+      "severity": "High",
+      "examples": [
+        "198.51.x.x",
+        "203.0.x.x"
+      ],
+      "id": "PII-011"
+    },
+    {
+      "stream": "{namespace=\"payments\", app=\"checkout-api\"}",
+      "owner": "Payments team",
+      "detector": "ip",
+      "label": "Public IP address",
+      "category": "Online identifier",
+      "gdpr_note": "Online identifier; CJEU Breyer (C-582/14) treats dynamic IPs as personal data.",
+      "sampled_lines": 5000,
+      "lines_with_hit": 822,
+      "occurrences": 822,
+      "distinct_values": 98,
+      "hit_rate": 0.1644,
+      "est_lines_per_day": 304140,
+      "retention_days": 90,
+      "risk_score": 12.0,
+      "severity": "High",
+      "examples": [
+        "203.0.x.x",
+        "198.51.x.x"
+      ],
+      "id": "PII-012"
+    },
+    {
+      "stream": "{namespace=\"identity\", app=\"auth-service\"}",
+      "owner": "Identity team",
+      "detector": "ip",
+      "label": "Public IP address",
+      "category": "Online identifier",
+      "gdpr_note": "Online identifier; CJEU Breyer (C-582/14) treats dynamic IPs as personal data.",
+      "sampled_lines": 5000,
+      "lines_with_hit": 1000,
+      "occurrences": 1000,
+      "distinct_values": 98,
+      "hit_rate": 0.2,
+      "est_lines_per_day": 128000,
+      "retention_days": 30,
+      "risk_score": 9.0,
+      "severity": "Medium",
+      "examples": [
+        "203.0.x.x",
+        "198.51.x.x"
+      ],
+      "id": "PII-013"
+    }
+  ]
+}

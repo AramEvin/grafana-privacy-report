@@ -1,0 +1,39 @@
+# Test lab: Loki + Grafana + Alloy + fake leaky logs.
+#   docker compose up -d
+#   Grafana: http://localhost:3000   Loki: http://localhost:3100
+services:
+  loki:
+    image: grafana/loki:3.5.5
+    command: -config.file=/etc/loki/loki.yaml
+    ports: ["3100:3100"]
+    volumes: ["./loki.yaml:/etc/loki/loki.yaml:ro"]
+
+  alloy:
+    image: grafana/alloy:v1.10.2
+    command: run /etc/alloy/config.alloy --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy
+    ports: ["12345:12345", "3500:3500"]
+    volumes: ["./alloy/config.alloy:/etc/alloy/config.alloy:ro"]
+    depends_on: [loki]
+
+  grafana:
+    image: grafana/grafana:12.0.0
+    ports: ["3000:3000"]
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+    volumes: ["./grafana/datasources.yaml:/etc/grafana/provisioning/datasources/loki.yaml:ro"]
+    depends_on: [loki]
+
+  # Sends the same fake logs twice: straight to Loki ("before")
+  # and through Alloy's redaction ("after", label pipeline="alloy").
+  seed:
+    image: python:3.12-slim
+    working_dir: /app
+    volumes: ["..:/app:ro"]
+    command: >
+      sh -c "pip install -q requests &&
+             sleep 15 &&
+             python lab/push_fake_logs.py --url http://loki:3100 --lines 3000 &&
+             python lab/push_fake_logs.py --url http://alloy:3500 --lines 1000 &&
+             echo 'SEED DONE'"
+    depends_on: [loki, alloy]

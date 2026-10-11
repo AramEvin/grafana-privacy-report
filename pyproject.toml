@@ -1,0 +1,13 @@
+[project]
+name = "grafana-privacy-report"
+version = "0.1.0"
+description = "Scan Loki logs for personal data and secrets; generate a DPIA-ready Word report with copy-paste Alloy/OTel redaction fixes."
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+dependencies = ["python-docx>=1.1", "PyYAML>=6.0", "requests>=2.31", "matplotlib>=3.8"]
+
+[project.scripts]
+grafana-privacy-report = "privacy_report.cli:main"
+
+[tool.setuptools]
+packages = ["privacy_report"]

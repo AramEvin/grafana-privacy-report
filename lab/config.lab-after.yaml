@@ -1,0 +1,26 @@
+# Scanner config for the local lab. Run from the repo root:
+#   grafana-privacy-report scan -c lab/config.lab.yaml
+report:
+  title: Telemetry Privacy Report
+  organization: My Test Lab
+  environment: lab
+  author: Your Name
+  scope: Local Loki with synthetic logs
+loki:
+  url: http://localhost:3100
+scan:
+  selectors: ['{pipeline="alloy"}']   # "after": logs that went through Alloy
+  group_by: [pipeline, namespace, app]
+  window: 24h
+  sample_lines_per_stream: 1000
+  default_retention: 31d
+  retention_overrides:
+    - match: '{namespace="payments"}'
+      period: 90d
+    - match: '{namespace="support"}'
+      period: 180d
+  owners:
+    - match: '{namespace="payments"}'
+      owner: Payments team
+    - match: '{namespace="identity"}'
+      owner: Identity team

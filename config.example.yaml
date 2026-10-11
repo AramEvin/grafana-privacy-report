@@ -1,0 +1,35 @@
+# grafana-privacy-report configuration
+report:
+  title: Telemetry Privacy Report
+  organization: Example Corp
+  environment: production
+  author: Observability Guild
+  scope: All production namespaces ingested by Loki
+  version: "1.0"
+  classification: CONFIDENTIAL — contains masked personal data findings
+
+loki:
+  url: http://loki-gateway.monitoring:3100      # Grafana Cloud: https://logs-prod-XXX.grafana.net
+  tenant: production                            # sent as X-Scope-OrgID (omit for single-tenant)
+  user_env: LOKI_USER                           # Grafana Cloud instance ID (optional)
+  token_env: LOKI_TOKEN                         # token with logs:read scope
+  verify_tls: true
+
+scan:
+  selectors:
+    - '{namespace=~".+"}'
+  group_by: [namespace, app]                    # one report "stream" per unique combination
+  window: 24h
+  sample_lines_per_stream: 5000                 # keep <= max_entries_limit_per_query
+  detectors: [email, card, iban, jwt, bearer, aws_key, phone, ip]
+  default_retention: 31d                        # mirror limits_config.retention_period
+  retention_overrides:                          # mirror limits_config.retention_stream
+    - match: '{namespace="payments"}'
+      period: 90d
+    - match: '{namespace="support"}'
+      period: 180d
+  owners:
+    - match: '{namespace="payments"}'
+      owner: Payments team
+    - match: '{namespace="identity"}'
+      owner: Identity team
